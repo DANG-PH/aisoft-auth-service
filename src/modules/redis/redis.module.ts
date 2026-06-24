@@ -1,0 +1,31 @@
+import { Module, Global } from '@nestjs/common';
+import { CacheModule } from '@nestjs/cache-manager';
+import KeyvRedis from '@keyv/redis';
+import Redis from 'ioredis';
+
+
+@Global()
+@Module({
+  imports: [
+    CacheModule.registerAsync({
+      useFactory: async () => {
+        return {
+          stores: [
+            // new Keyv({
+            //   store: new CacheableMemory({ ttl: 0, lruSize: 5000 }),
+            // }),
+            new KeyvRedis(process.env.REDIS_URL), // hoặc kết nối cổng 6379 của local
+          ],
+          ttl: 0,
+          namespace: process.env.NAME_SPACE_CACHE_KEY
+        };
+      },
+    }),
+  ],
+  providers: [{
+    provide: 'REDIS_CLIENT',
+    useFactory: () => new Redis(process.env.REDIS_URL || ''),
+  }],
+  exports: [CacheModule, 'REDIS_CLIENT'],
+})
+export class RedisModule {}

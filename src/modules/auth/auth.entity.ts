@@ -14,6 +14,12 @@ export class AuthEntity {
   @Column({ default: 'USER' })
   role: string;
 
+  @Column({ default: 0 })
+  tokenVersion: number;
+
+  @Column({ default: 0 })
+  type: number;          // 0 = local, 1 = google
+
   @Column({ nullable: true })
   password: string;
 
